@@ -63,18 +63,18 @@ public class FailureUtils {
      * Given a {@link Protos.TaskInfo} representing the prior launch of a task (or an empty Optional if no prior version
      * exists), returns the type of launch to be performed.
      */
-    public static FailureUtils.LaunchType getLaunchType(Optional<Protos.TaskInfo> priorTaskInfo) {
+    public static LaunchType getLaunchType(Optional<Protos.TaskInfo> priorTaskInfo) {
         if (!priorTaskInfo.isPresent()) {
             // This task has never been launched anywhere, otherwise the prior TaskInfo would have something
-            return FailureUtils.LaunchType.INITIAL_LAUNCH;
+            return LaunchType.INITIAL_LAUNCH;
         }
 
         if (new TaskLabelReader(priorTaskInfo.get()).isPermanentlyFailed()) {
             // This task had been launched somewhere before, but now it's being relaunched from scratch
-            return FailureUtils.LaunchType.INITIAL_LAUNCH;
+            return LaunchType.INITIAL_LAUNCH;
         }
 
-        return FailureUtils.LaunchType.RELAUNCH;
+        return LaunchType.RELAUNCH;
     }
 
     /**

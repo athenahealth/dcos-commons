@@ -59,6 +59,28 @@ public class AuxLabelAccess {
         networkInfoBuilder.setLabels(LabelUtils.toProto(map));
     }
 
+    // Task status initial launch bit
+
+    /**
+     * Ensures that the task is identified as being launched for the first time at its current location. This is
+     * intentionally stored in the stub STAGING TaskStatus as it will be automatically overwritten/cleared when Mesos
+     * first sends a real status for the task.
+     */
+    public static void setInitialLaunch(Protos.TaskStatus.Builder taskStatusBuilder) {
+        if (taskStatusBuilder.getState() != Protos.TaskState.TASK_STAGING) {
+            throw new IllegalArgumentException("Initial launch bit can only be set for STAGING status, got: "
+                    + taskStatusBuilder);
+        }
+        taskStatusBuilder.setLabels(withLabel(
+                taskStatusBuilder.getLabels(),
+                LabelConstants.INITIAL_LAUNCH_LABEL, LabelConstants.BOOLEAN_LABEL_TRUE_VALUE));
+    }
+
+    public static boolean isInitialLaunch(Protos.TaskStatus taskStatus) {
+        String val = LabelUtils.toMap(taskStatus.getLabels()).get(LabelConstants.INITIAL_LAUNCH_LABEL);
+        return val != null && val.equals(LabelConstants.BOOLEAN_LABEL_TRUE_VALUE);
+    }
+
     // VIPs
 
     /**
